@@ -1,0 +1,18 @@
+[
+  {
+    "email": [
+      "subscriber@example.com"
+    ],
+    "keyword_subject": [
+      "資通安全",
+      "資訊安全",
+      "資安",
+      "SOC",
+      "SIEM",
+      "IPS"
+    ],
+    "keyword_org": [
+      "財團法人電信技術中心"
+    ]
+  }
+]
