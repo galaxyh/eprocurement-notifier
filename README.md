@@ -16,7 +16,7 @@ python query_declaration.py \
 -u eprocurement \
 -p eprocurement \
 -i localhost \
--b tw_eprocurement
+-b tw_procurement
 ```
 
 ```
@@ -27,7 +27,7 @@ python notify.py \
 -u eprocurement \
 -p eprocurement \
 -i localhost \
--b tw_eprocurement \
+-b tw_procurement \
 -j sender@example.com \
 -k password \
 -l smtp.example.com
