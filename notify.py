@@ -143,7 +143,7 @@ if __name__ == '__main__':
 
     # Start query
     try:
-        content_template = u'標案案號：{}\n機關名稱：{}\n標案名稱：{}\n招標方式：{}\n採購性質：{}\n公告日期：{}\n截止投標日期：{}\n預算金額：{}標案網址：{}\n\n'
+        content_template = u'標案案號：{}\n機關名稱：{}\n標案名稱：{}\n招標方式：{}\n採購性質：{}\n公告日期：{}\n截止投標日期：{}\n預算金額：{}\n標案網址：{}\n\n'
         content = ''
 
         cnx = mysql.connector.connect(**connection_info)
