@@ -1,5 +1,5 @@
 # eprocurement-notifier
-Notifier for Taiwan Eprocurement
+Notify subscribers with matching procurement declarations keywords for Taiwan government e-procurement website.
 
 # Interpreter
 Python 3
