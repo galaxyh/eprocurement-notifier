@@ -1,6 +1,12 @@
 # eprocurement-notifier
 Notifier for Taiwan Eprocurement
 
+# Interpreter
+Python 3
+
+# Dependency
+requests, lxml, beautifulsoup4, mysql-connector-python-rf
+
 # Usage
 ```
 python query_declaration.py \
