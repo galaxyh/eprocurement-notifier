@@ -143,6 +143,7 @@ if __name__ == '__main__':
     try:
         f = open(options.notify_config.strip(), encoding='UTF-8')
         config = json.load(f)
+        logger.info(config)
     except IOError:
         logger.error('Unable to open notification configuration file.')
         quit(_ERRCODE_FILE)
