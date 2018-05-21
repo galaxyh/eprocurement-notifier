@@ -1,18 +1,31 @@
 [
   {
     "email": [
-      "subscriber@example.com"
+      "subscriber_1@example.com"
     ],
     "keyword_subject": [
       "資通安全",
       "資訊安全",
-      "資安",
-      "SOC",
-      "SIEM",
-      "IPS"
+      "資安"
     ],
     "keyword_org": [
       "財團法人電信技術中心"
-    ]
+    ],
+    "budget": 0
+  },
+  {
+    "email": [
+      "subscriber_2@example.com",
+      "subscriber_3@example.com"
+    ],
+    "keyword_subject": [
+      "資通安全",
+      "資訊安全",
+      "資安"
+    ],
+    "keyword_org": [
+      "財團法人電信技術中心"
+    ],
+    "budget": 1000000
   }
 ]
