@@ -59,27 +59,33 @@ def parse_args():
     return p.parse_args()
 
 
-def gen_select_sql(table, start_date, org_names=None, subjects=None):
-    sql_str = u'SELECT * FROM {} WHERE (declare_date >= {}) '.format(table, start_date.strftime('%Y-%m-%d'))
+def gen_select_sql(table, start_date, org_names=None, subjects=None, budget=None):
+    sql_str = u'SELECT * FROM {} ' \
+              u'WHERE (declare_date >= \'{}\') '.format(table, start_date.strftime('%Y-%m-%d'))
 
-    sql_keyword = ''
+    sql_keyword = u''
     if org_names is not None and len(org_names) > 0:
         sql_keyword += u' OR '.join([u'org_name LIKE \'%{}%\''.format(w) for w in org_names])
 
     if subjects is not None and len(subjects) > 0:
         if sql_keyword:
-            sql_keyword += ' OR '
+            sql_keyword += u' OR '
         sql_keyword += u' OR '.join([u'subject LIKE \'%{}%\''.format(w) for w in subjects])
 
     if sql_keyword:
-        sql_str += 'AND (' + sql_keyword + ')'
-    logger.debug(sql_str)
+        sql_str += u' AND (' + sql_keyword + ')'
+
+    if budget is not None and budget > 0:
+        sql_str += u' AND (budget >= {} OR budget is null)'.format(budget)
+
+    sql_str += u' ORDER BY budget DESC' \
+
     return sql_str
 
 
-def send_mail(sender, recipients, subject, content, server, username, pwd):
+def send_mail(sender, recipients, subject, message, server, username, pwd):
     msg = EmailMessage()
-    msg.set_content(content)
+    msg.set_content(message)
     msg['Subject'] = subject
     msg['From'] = sender
     msg['To'] = ', '.join(recipients)
@@ -91,9 +97,9 @@ def send_mail(sender, recipients, subject, content, server, username, pwd):
         s.login(username, pwd)
         s.send_message(msg)
         logger.info('Notification Email sent.')
-    except SMTPException as e:
+    except SMTPException as e_str:
         logger.error("Error: unable to send email")
-        logger.error(e)
+        logger.error(e_str)
 
 
 if __name__ == '__main__':
@@ -152,7 +158,7 @@ if __name__ == '__main__':
                            u'公告日期：{}\n' \
                            u'截止投標日期：{}\n' \
                            u'預算金額：{}\n' \
-                           u'標案網址：{}\n\n'
+                           u'標案網址：<a href="{}">{}</a>\n\n'
 
         cnx = mysql.connector.connect(**connection_info)
         cnx.autocommit = True
@@ -160,7 +166,12 @@ if __name__ == '__main__':
             receivers = subscriber['email']
             org_names = subscriber['keyword_org'] if 'keyword_org' in subscriber else None
             subjects = subscriber['keyword_subject'] if 'keyword_subject' in subscriber else None
-            query = gen_select_sql('declaration_notify', start, org_names, subjects)
+            budget = subscriber['budget'] if 'budget' in subscriber else None
+            query = gen_select_sql('declaration_notify',
+                                   start,
+                                   org_names=org_names,
+                                   subjects=subjects,
+                                   budget=budget)
 
             cursor = cnx.cursor(buffered=True, dictionary=True)
             cursor.execute(query)
@@ -168,6 +179,7 @@ if __name__ == '__main__':
             sn = 1
             content = ''
             for row in cursor:
+                budget_str = '' if row['budget'] is None else 'NT$' + '{:20,d}'.format(row['budget']).strip()
                 content += content_template.format(sn,
                                                    row['id'],
                                                    row['org_name'],
@@ -176,10 +188,12 @@ if __name__ == '__main__':
                                                    row['category'],
                                                    row['declare_date'],
                                                    row['deadline'],
-                                                   'NT$' + '{:20,d}'.format(row['budget']).strip(),
-                                                   row['url'])
+                                                   budget_str,
+                                                   row['url'], row['url'])
                 sn += 1
             cursor.close()
+            content = u'<html><body>' + content + u'</body></html>'
+
             send_mail(m_user,
                       receivers,
                       '政府採購網公開招標通知 ({})'.format(start.strftime('%Y-%m-%d')),
