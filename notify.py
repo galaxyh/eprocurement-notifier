@@ -9,6 +9,7 @@ import time
 import datetime as dt
 import smtplib
 import mysql.connector
+from datetime import datetime
 from optparse import OptionParser
 from smtplib import SMTPException
 from email.message import EmailMessage
@@ -213,7 +214,7 @@ if __name__ == '__main__':
 
             send_mail(m_user,
                       receivers,
-                      '政府採購網公開招標通知 ({})'.format(start.strftime('%Y-%m-%d')),
+                      '政府採購網公開招標通知 ({})'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M")),
                       content,
                       m_host,
                       m_user,
