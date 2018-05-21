@@ -143,7 +143,7 @@ if __name__ == '__main__':
 
     # Start query
     try:
-        content_template = u'項次：{}\n' \
+        content_template = u'[ 項次：{} ]\n' \
                            u'標案案號：{}\n' \
                            u'機關名稱：{}\n' \
                            u'標案名稱：{}\n' \
