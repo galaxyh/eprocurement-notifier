@@ -85,7 +85,7 @@ def gen_select_sql(table, start_date, org_names=None, subjects=None, budget=None
 
 def send_mail(sender, recipients, subject, message, server, username, pwd):
     msg = EmailMessage()
-    msg.set_content(message)
+    msg.set_content(message, subtype='html')
     msg['Subject'] = subject
     msg['From'] = sender
     msg['To'] = ', '.join(recipients)
