@@ -143,8 +143,16 @@ if __name__ == '__main__':
 
     # Start query
     try:
-        content_template = u'標案案號：{}\n機關名稱：{}\n標案名稱：{}\n招標方式：{}\n採購性質：{}\n公告日期：{}\n截止投標日期：{}\n預算金額：{}\n標案網址：{}\n\n'
-        content = ''
+        content_template = u'項次：{}\n' \
+                           u'標案案號：{}\n' \
+                           u'機關名稱：{}\n' \
+                           u'標案名稱：{}\n' \
+                           u'招標方式：{}\n' \
+                           u'採購性質：{}\n' \
+                           u'公告日期：{}\n' \
+                           u'截止投標日期：{}\n' \
+                           u'預算金額：{}\n' \
+                           u'標案網址：{}\n\n'
 
         cnx = mysql.connector.connect(**connection_info)
         cnx.autocommit = True
@@ -157,8 +165,11 @@ if __name__ == '__main__':
             cursor = cnx.cursor(buffered=True, dictionary=True)
             cursor.execute(query)
 
+            sn = 1
+            content = ''
             for row in cursor:
-                content += content_template.format(row['id'],
+                content += content_template.format(sn,
+                                                   row['id'],
                                                    row['org_name'],
                                                    row['subject'],
                                                    row['method'],
@@ -167,6 +178,7 @@ if __name__ == '__main__':
                                                    row['deadline'],
                                                    'NT$' + '{:20,d}'.format(row['budget']).strip(),
                                                    row['url'])
+                sn += 1
             cursor.close()
             send_mail(m_user,
                       receivers,
