@@ -214,7 +214,7 @@ if __name__ == '__main__':
 
             send_mail(m_user,
                       receivers,
-                      '政府採購網公開招標通知 ({})'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M")),
+                      '政府採購網公開招標通知 ({})'.format(datetime.now().strftime("%Y-%m-%d %H:%M")),
                       content,
                       m_host,
                       m_user,
