@@ -205,7 +205,7 @@ if __name__ == '__main__':
                 sn += 1
             cursor.close()
             if not content:
-                logger.info('No match is found or all procurement has been notified.')
+                logger.info('No match is found or all procurements have been notified.')
                 continue
 
             content = u'<html><body>' + content + u'</body></html>'
