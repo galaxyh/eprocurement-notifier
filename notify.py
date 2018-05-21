@@ -149,16 +149,16 @@ if __name__ == '__main__':
 
     # Start query
     try:
-        content_template = u'[ 項次：{} ]\n' \
-                           u'標案案號：{}\n' \
-                           u'機關名稱：{}\n' \
-                           u'標案名稱：{}\n' \
-                           u'招標方式：{}\n' \
-                           u'採購性質：{}\n' \
-                           u'公告日期：{}\n' \
-                           u'截止投標日期：{}\n' \
-                           u'預算金額：{}\n' \
-                           u'標案網址：<a href="{}">{}</a>\n\n'
+        content_template = u'<p><b>[ 項次：{} ]</b><br/>' \
+                           u'標案案號：{}<br/>' \
+                           u'機關名稱：{}<br/>' \
+                           u'標案名稱：{}<br/>' \
+                           u'招標方式：{}<br/>' \
+                           u'採購性質：{}<br/>' \
+                           u'公告日期：{}<br/>' \
+                           u'截止投標日期：{}<br/>' \
+                           u'預算金額：{}<br/>' \
+                           u'標案網址：<a href="{}">{}</a><br/></p>'
 
         cnx = mysql.connector.connect(**connection_info)
         cnx.autocommit = True
