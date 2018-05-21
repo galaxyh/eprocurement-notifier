@@ -61,7 +61,8 @@ def parse_args():
 
 def gen_select_sql(table, start_date, org_names=None, subjects=None, budget=None):
     sql_str = u'SELECT * FROM {} ' \
-              u'WHERE (declare_date >= \'{}\') '.format(table, start_date.strftime('%Y-%m-%d'))
+              u'WHERE (notified <> 1 OR notified IS NULL) ' \
+              u'AND (declare_date >= \'{}\') '.format(table, start_date.strftime('%Y-%m-%d'))
 
     sql_keyword = u''
     if org_names is not None and len(org_names) > 0:
@@ -78,9 +79,17 @@ def gen_select_sql(table, start_date, org_names=None, subjects=None, budget=None
     if budget is not None and budget > 0:
         sql_str += u' AND (budget >= {} OR budget is null)'.format(budget)
 
-    sql_str += u' ORDER BY budget DESC' \
-
+    sql_str += u' ORDER BY budget DESC'
     return sql_str
+
+
+def gen_update_sql(table, ids=None):
+    if ids is None or len(ids) == 0:
+        return None
+    else:
+        sql_str = u'UPDATE {} SET notified = 1 ' \
+                  u'WHERE id in ({})'.format(table, ', '.join(['\'' + p + '\'' for p in ids]))
+        return sql_str
 
 
 def send_mail(sender, recipients, subject, message, server, username, pwd):
@@ -143,7 +152,6 @@ if __name__ == '__main__':
     try:
         f = open(options.notify_config.strip(), encoding='UTF-8')
         config = json.load(f)
-        logger.info(config)
     except IOError:
         logger.error('Unable to open notification configuration file.')
         quit(_ERRCODE_FILE)
@@ -163,7 +171,9 @@ if __name__ == '__main__':
 
         cnx = mysql.connector.connect(**connection_info)
         cnx.autocommit = True
+        match_ids = set('')
         for subscriber in config:
+            logger.info(subscriber)
             receivers = subscriber['email']
             org_names = subscriber['keyword_org'] if 'keyword_org' in subscriber else None
             subjects = subscriber['keyword_subject'] if 'keyword_subject' in subscriber else None
@@ -191,9 +201,15 @@ if __name__ == '__main__':
                                                    row['deadline'],
                                                    budget_str,
                                                    row['url'], row['url'])
+                match_ids.add(row['id'])
                 sn += 1
             cursor.close()
+            if not content:
+                logger.info('No match is found or all procurement has been notified.')
+                continue
+
             content = u'<html><body>' + content + u'</body></html>'
+            logger.info(content)
 
             send_mail(m_user,
                       receivers,
@@ -202,7 +218,13 @@ if __name__ == '__main__':
                       m_host,
                       m_user,
                       m_password)
-        logger.info(content)
+
+        # Mark notified procurements
+        if len(match_ids) > 0:
+            update_sql = gen_update_sql('declaration_notify', ids=match_ids)
+            cursor = cnx.cursor(buffered=True, dictionary=True)
+            cursor.execute(update_sql)
+            cursor.close()
     except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             logger.error("Something is wrong with your user name or password.")
