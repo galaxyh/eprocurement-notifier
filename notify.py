@@ -165,10 +165,16 @@ if __name__ == '__main__':
                                                    row['category'],
                                                    row['declare_date'],
                                                    row['deadline'],
-                                                   row['budget'],
+                                                   'NT$' + '{:20,d}'.format(row['budget']).strip(),
                                                    row['url'])
             cursor.close()
-            send_mail(m_user, receivers, '政府採購網標案公告通知', content, m_host, m_user, m_password)
+            send_mail(m_user,
+                      receivers,
+                      '政府採購網公開招標通知 ({})'.format(start.strftime('%Y-%m-%d')),
+                      content,
+                      m_host,
+                      m_user,
+                      m_password)
         logger.info(content)
     except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
