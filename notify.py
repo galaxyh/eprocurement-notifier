@@ -12,7 +12,7 @@ import mysql.connector
 from datetime import datetime
 from optparse import OptionParser
 from smtplib import SMTPException
-from email.message import EmailMessage
+from email.mime.text import MIMEText
 from mysql.connector import errorcode
 
 __author__ = "Yu-chun Huang"
@@ -94,8 +94,9 @@ def gen_update_sql(table, ids=None):
 
 
 def send_mail(sender, recipients, subject, message, server, username, pwd):
-    msg = EmailMessage()
-    msg.set_content(message, subtype='html')
+    # msg = EmailMessage()
+    msg = MIMEText(message, 'html', 'utf-8')
+    msg["Accept-Charset"] = 'utf-8'
     msg['Subject'] = subject
     msg['From'] = sender
     msg['To'] = ', '.join(recipients)
@@ -104,7 +105,8 @@ def send_mail(sender, recipients, subject, message, server, username, pwd):
     try:
         logger.info('Sending notification Email.')
         s = smtplib.SMTP(server)
-        s.login(username, pwd)
+        if username and pwd:
+            s.login(username, pwd)
         s.send_message(msg)
         logger.info('Notification Email sent.')
     except SMTPException as e_str:
@@ -143,8 +145,8 @@ if __name__ == '__main__':
     m_user = options.m_user.strip()
     m_password = options.m_password.strip()
     m_host = options.m_host.strip()
-    if not (m_user and m_password and m_host):
-        logger.error('SMTP information is incomplete.')
+    if not (m_user and m_host):
+        logger.error('Sender email and SMTP host are required.)')
         quit()
 
     # Log query arguments
